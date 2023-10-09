@@ -3,19 +3,23 @@ from tkinter import ttk, messagebox
 from tkinter.font import BOLD
 import util.generic as utl
 from forms.form_menu import Menu
-
+from util.bdo import conexion
 
 class App:
     
     def verificar(self):
         usu = self.usuario.get()
-        password = self.password.get()        
-        if(usu == "1" and password == "1") :
+        password = self.password.get() 
+        with conexion.cursor() as cursor:
+            consulta = ('Select correo, contra from usuario where correo=? and contra=?')
+            cursor.execute(consulta,(usu,password))
+            resultado = cursor.fetchall()
+        if resultado:
             self.ventana.destroy()
             Menu()
         else:
-            messagebox.showerror(message="La contraseña no es correcta",title="Mensaje")           
-                      
+            messagebox.showerror(message="El correo o contraseña no es correcta",title="Mensaje")  
+
     def __init__(self):        
         self.ventana = tk.Tk()                             
         self.ventana.title('Inicio de sesion')
