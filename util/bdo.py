@@ -1,6 +1,6 @@
 import pyodbc
 
-server = 'DESKTOP-JGU1AKI' 
+server = 'DESKTOP-U0R51TM' 
 bd = 'CAPRICCE'
 usuario = 'sadmin'
 contra = '123'
