@@ -77,7 +77,6 @@ class OrdenCompras():
         inicio.pack(fill=tk.X, padx=20,pady=20)   
         inicio.bind("<Return>", (lambda event: self.verificar()))
 
-        self.ventana.mainloop()
 
         # Botón de menú
         btnMenu = tk.Button(self.ventana, text="Menú", font=('Times', 15, BOLD), command=self.abrir_menu)
