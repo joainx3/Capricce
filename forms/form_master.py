@@ -4,7 +4,7 @@ import util.generic as utl
 
 class MasterPanel:
     
-                                      
+                                
     def __init__(self):        
         self.ventana = tk.Tk()                             
         self.ventana.title('Master panel')

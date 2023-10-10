@@ -4,6 +4,7 @@ from tkinter.font import BOLD
 import util.generic as utl
 from util.bdo import conexion
 
+
 class OrdenCompras():
     def verificar(self):
         id_cliente = self.combobox1.get()
@@ -24,9 +25,14 @@ class OrdenCompras():
         self.ventana.geometry('800x500')
         self.ventana.config(bg='#fcfcfc')
         self.ventana.resizable(width=0, height=0)    
-        utl.centrar_ventana(self.ventana,800,650)
+        utl.centrar_ventana(self.ventana,800,500)
+
+        # Botón de menú
+        btnMenu = tk.Button(self.ventana, text="Menú", font=('Times', 15, BOLD), command=self.abrir_menu)
+        btnMenu.pack()
+        btnMenu.place(x=0-1,y=0)
         
-        #frame_form
+         #frame_form
         frame_form = tk.Frame(self.ventana, bd=0, relief=tk.SOLID, bg='#fcfcfc')
         frame_form.pack(side="right",expand=tk.YES,fill=tk.BOTH)
         #frame_form
@@ -71,6 +77,21 @@ class OrdenCompras():
         inicio.pack(fill=tk.X, padx=20,pady=20)   
         inicio.bind("<Return>", (lambda event: self.verificar()))
 
-        #end frame_form_fill
-
         self.ventana.mainloop()
+
+        # Botón de menú
+        btnMenu = tk.Button(self.ventana, text="Menú", font=('Times', 15, BOLD), command=self.abrir_menu)
+        btnMenu.pack()
+        btnMenu.place(x=0-1,y=0)
+        
+        self.ventana.mainloop()
+
+    def abrir_menu(self):
+        from forms.form_menu import Menu
+        self.ventana.destroy()
+        Menu()
+
+if __name__ == "__main__":
+    app = OrdenCompras()
+
+

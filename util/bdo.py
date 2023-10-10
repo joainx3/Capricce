@@ -1,6 +1,10 @@
 import pyodbc
 
+<<<<<<< HEAD
 server = 'JOAOX3' 
+=======
+server = 'DESKTOP-U0R51TM' 
+>>>>>>> db672e5660541fffa1ecbdd3d0bfc30ab15af358
 bd = 'CAPRICCE'
 usuario = 'sadmin'
 contra = '123'
