@@ -23,10 +23,10 @@ class App:
     def __init__(self):        
         self.ventana = tk.Tk()                             
         self.ventana.title('Inicio de sesión')
-        self.ventana.geometry('800x500')
+        self.ventana.geometry('1280x720')
         self.ventana.config(bg='#fcfcfc')
         self.ventana.resizable(width=0, height=0)    
-        utl.centrar_ventana(self.ventana,800,500)
+        utl.centrar_ventana(self.ventana, 1280, 720)
         
         logo =utl.leer_imagen("./imagenes/logo_capricce.jpg", (400, 250))
         # frame_logo
