@@ -3,7 +3,8 @@ from tkinter import ttk, messagebox
 from tkinter.font import BOLD
 import util.generic as utl
 from forms.form_compra import OrdenCompras
-
+from forms.form_mostrarorden import MostrarOrdenes
+from forms.form_facturas import MostrarFacturas
 class Menu():
     def CerrarSesion(self):
         from forms.form_login import App
