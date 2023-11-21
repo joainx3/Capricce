@@ -1,3 +1,2 @@
-from forms.form_compra import OrdenCompras
-
-OrdenCompras()
+from forms.form_menu import  Menu
+Menu()

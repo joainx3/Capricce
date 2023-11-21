@@ -22,17 +22,17 @@ class App:
 
     def __init__(self):        
         self.ventana = tk.Tk()                             
-        self.ventana.title('Inicio de sesion')
-        self.ventana.geometry('800x500')
+        self.ventana.title('Inicio de sesión')
+        self.ventana.geometry('1280x720')
         self.ventana.config(bg='#fcfcfc')
         self.ventana.resizable(width=0, height=0)    
-        utl.centrar_ventana(self.ventana,800,500)
+        utl.centrar_ventana(self.ventana, 1280, 720)
         
-        logo =utl.leer_imagen("./imagenes/logo.png", (200, 200))
+        logo =utl.leer_imagen("./imagenes/logo_capricce.jpg", (400, 250))
         # frame_logo
-        frame_logo = tk.Frame(self.ventana, bd=0, width=300, relief=tk.SOLID, padx=10, pady=10,bg='#3a7ff6')
+        frame_logo = tk.Frame(self.ventana, bd=0, width=300, relief=tk.SOLID, padx=10, pady=10,bg='#FCFFFF')
         frame_logo.pack(side="left",expand=tk.YES,fill=tk.BOTH)
-        label = tk.Label( frame_logo, image=logo,bg='#3a7ff6' )
+        label = tk.Label( frame_logo, image=logo,bg='#FCFFFF')
         label.place(x=0,y=0,relwidth=1, relheight=1)
         
         #frame_form
