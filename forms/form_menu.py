@@ -3,7 +3,8 @@ from tkinter import ttk, messagebox
 from tkinter.font import BOLD
 import util.generic as utl
 from forms.form_compra import OrdenCompras
-
+from forms.form_mostrarorden import MostrarOrdenes
+from forms.form_facturas import MostrarFacturas
 class Menu():
     def CerrarSesion(self):
         from forms.form_login import App
@@ -13,6 +14,15 @@ class Menu():
     def OrdenCompra(self):
         self.ventana.destroy()
         OrdenCompras()
+
+    def MostrarOrdenes(self):
+        self.ventana.destroy()
+        MostrarOrdenes()
+
+    def MostrarFactura(self):
+        self.ventana.destroy()
+      # Llamar al método necesario en la instancia
+        MostrarFacturas()
          
     def __init__(self):
         self.ventana = tk.Tk()
@@ -35,6 +45,12 @@ class Menu():
 
         btnCompras = tk.Button(frame_form, text="Ordenes de compra", font=('Times', 15, BOLD), command=self.OrdenCompra)
         btnCompras.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+        btnOrdenes = tk.Button(frame_form, text="Mostrar Ordenes", font=('Times', 15, BOLD), command=self.MostrarOrdenes)
+        btnOrdenes.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
+
+        btnOrdenes = tk.Button(frame_form, text="Facturas", font=('Times', 15, BOLD), command=self.MostrarFactura)
+        btnOrdenes.place(relx=0.5, rely=0.7, anchor=tk.CENTER)
 
         self.ventana.mainloop()
 
