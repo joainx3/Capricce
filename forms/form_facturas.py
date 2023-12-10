@@ -3,6 +3,8 @@ from tkinter import ttk, messagebox, filedialog
 from tkinter.font import BOLD
 from tkcalendar import DateEntry
 from datetime import datetime
+import openpyxl
+from openpyxl.styles import Font
 import util.generic as utl
 from util.bdo import conexion
 
@@ -43,6 +45,10 @@ class MostrarFacturas:
         # Botón para cambiar estado de despacho
         btnCambiarDespacho = tk.Button(self.ventana, text="Cambiar Estado de Despacho", font=('Times', 15, BOLD), command=self.ver_detalles_factura)
         btnCambiarDespacho.grid(row=1, column=0, padx=10, pady=10, sticky="nw")
+
+        # Botón para exportar a Excel
+        btnExportarExcel = tk.Button(self.ventana, text="Exportar a Excel", font=('Times', 15, BOLD), command=self.exportar_a_excel)
+        btnExportarExcel.grid(row=2, column=0, padx=10, pady=10, sticky="nw")
 
         self.ventana.mainloop()
 
