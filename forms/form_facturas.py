@@ -1,6 +1,10 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 from tkinter.font import BOLD
+from tkcalendar import DateEntry
+from datetime import datetime
+import openpyxl
+from openpyxl.styles import Font
 import util.generic as utl
 from util.bdo import conexion
 
@@ -12,7 +16,25 @@ class MostrarFacturas:
         self.ventana.config(bg='#fcfcfc')
         self.ventana.resizable(width=0, height=0)
         utl.centrar_ventana(self.ventana, 1280, 720)
-        
+
+        # Widgets para filtrar por fechas
+        self.lblFechaInicio = tk.Label(self.ventana, text="Fecha de Inicio:", font=('Times', 12))
+        self.lblFechaInicio.grid(row=0, column=1, padx=10, pady=10, sticky="e")
+
+        # Usa DateEntry en lugar de Entry para seleccionar la fecha de inicio
+        self.entryFechaInicio = DateEntry(self.ventana, font=('Times', 12), width=12, background='darkblue', foreground='white', borderwidth=2)
+        self.entryFechaInicio.grid(row=0, column=2, padx=10, pady=10)
+
+        self.lblFechaFin = tk.Label(self.ventana, text="Fecha de Fin:", font=('Times', 12))
+        self.lblFechaFin.grid(row=1, column=1, padx=10, pady=10, sticky="e")
+
+        # Usa DateEntry en lugar de Entry para seleccionar la fecha de fin
+        self.entryFechaFin = DateEntry(self.ventana, font=('Times', 12), width=12, background='darkblue', foreground='white', borderwidth=2)
+        self.entryFechaFin.grid(row=1, column=2, padx=10, pady=10)
+
+        btnFiltrarFecha = tk.Button(self.ventana, text="Filtrar por Fecha", font=('Times', 12, BOLD), command=self.filtrar_por_fecha)
+        btnFiltrarFecha.grid(row=2, column=2, padx=10, pady=10)
+
         # Botón de menú
         btnMenu = tk.Button(self.ventana, text="Menú", font=('Times', 15, BOLD), command=self.abrir_menu)
         btnMenu.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
@@ -24,6 +46,10 @@ class MostrarFacturas:
         btnCambiarDespacho = tk.Button(self.ventana, text="Cambiar Estado de Despacho", font=('Times', 15, BOLD), command=self.ver_detalles_factura)
         btnCambiarDespacho.grid(row=1, column=0, padx=10, pady=10, sticky="nw")
 
+        # Botón para exportar a Excel
+        btnExportarExcel = tk.Button(self.ventana, text="Exportar a Excel", font=('Times', 15, BOLD), command=self.exportar_a_excel)
+        btnExportarExcel.grid(row=2, column=0, padx=10, pady=10, sticky="nw")
+
         self.ventana.mainloop()
 
     def abrir_menu(self):
@@ -33,7 +59,7 @@ class MostrarFacturas:
 
     def crear_tabla(self):
         frame_tabla = tk.Frame(self.ventana, bd=0, relief=tk.SOLID, bg='#fcfcfc')
-        frame_tabla.grid(row=2, column=0, sticky="nsew")
+        frame_tabla.grid(row=3, column=0, sticky="nsew")
 
         # Configuración de la tabla
         columns = ["ID_ORDEN", "Nombre Cliente", "Direccion", "Producto", "Precio", "FechaCompra", "EstadoFactura", "EstadoDespacho", "IVA", "TotalConIVA"]
@@ -54,7 +80,7 @@ class MostrarFacturas:
         self.tree.pack(expand=tk.YES, fill=tk.BOTH)
 
         # Configura el comportamiento de redimensionamiento de la ventana principal
-        self.ventana.grid_rowconfigure(2, weight=1)
+        self.ventana.grid_rowconfigure(3, weight=1)
         self.ventana.grid_columnconfigure(0, weight=1)
 
     def llenar_tabla_facturas(self):
@@ -122,6 +148,82 @@ class MostrarFacturas:
 
         # Vuelve a llenar la tabla con los datos actualizados
         self.llenar_tabla_facturas()
+
+    def filtrar_por_fecha(self):
+        fecha_inicio_str = self.entryFechaInicio.get()
+        fecha_fin_str = self.entryFechaFin.get()
+
+        try:
+            # Convertir las fechas a objetos datetime con el formato "MM/DD/YY"
+            fecha_inicio = datetime.strptime(fecha_inicio_str, "%m/%d/%y")
+            fecha_fin = datetime.strptime(fecha_fin_str, "%m/%d/%y")
+
+            # Validar que la fecha de inicio sea anterior o igual a la fecha de fin
+            if fecha_inicio > fecha_fin:
+                messagebox.showwarning("Advertencia", "La fecha de inicio debe ser anterior o igual a la fecha de fin.")
+                return
+
+            # Utilizar la conexión ya disponible en util.bdo
+            with conexion.cursor() as cursor:
+                # Modificar la consulta para incluir las fechas en la cláusula WHERE
+                cursor.execute("EXEC sp_MostrarFacturasClientesConFiltroFecha ?, ?", (fecha_inicio, fecha_fin))
+
+                # Obtener los resultados
+                resultados = cursor.fetchall()
+
+                # Limpiar la tabla actual
+                for item in self.tree.get_children():
+                    self.tree.delete(item)
+
+                # Llenar la tabla con los resultados filtrados por fechas
+                for row in resultados:
+                    nombre_cliente = f"{row[1]} "
+                    self.tree.insert("", "end", values=(row[0], nombre_cliente, row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9]))
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al filtrar por fechas: {e}")
+   
+'''
+    def exportar_a_pdf(self):
+        # Verificar si hay una fila seleccionada
+        selected_item = self.tree.selection()
+        if not selected_item:
+            messagebox.showwarning("Advertencia", "Selecciona una fila para exportar a PDF.")
+            return
+
+        # Obtener los valores de la fila seleccionada
+        values = self.tree.item(selected_item, "values")
+
+        # Crear un cuadro de diálogo para seleccionar la ubicación del archivo PDF
+        pdf_filename = self.guardar_pdf()
+        if not pdf_filename:
+            return
+
+        try:
+            with canvas.Canvas(pdf_filename, pagesize=letter) as pdf:
+                # Escribir el contenido en el PDF
+                pdf.drawString(100, 800, f"ID_ORDEN: {values[0]}".encode('utf-8'))
+                pdf.drawString(100, 780, f"Nombre Cliente: {values[1]}".encode('utf-8'))
+                pdf.drawString(100, 760, f"Direccion: {values[2]}".encode('utf-8'))
+                # ... agregar más campos según tus necesidades
+
+            messagebox.showinfo("Información", f"Exportación a PDF exitosa. Archivo guardado en {pdf_filename}")
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al exportar a PDF: {e}")
+
+    def guardar_pdf(self):
+        # Crear un cuadro de diálogo para seleccionar la ubicación del archivo PDF
+        file_dialog = filedialog.asksaveasfile(defaultextension=".pdf", filetypes=[("PDF files", "*.pdf")])
+
+        # Obtener la ubicación seleccionada
+        if file_dialog:
+            pdf_filename = file_dialog.name
+            file_dialog.close()  # Cerrar el archivo abierto por asksaveasfile
+            return pdf_filename
+        else:
+            return None
+'''
 
 if __name__ == "__main__":
     app = MostrarFacturas()

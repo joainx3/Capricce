@@ -30,9 +30,9 @@ class App:
         
         logo =utl.leer_imagen("./imagenes/logo_capricce.jpg", (400, 250))
         # frame_logo
-        frame_logo = tk.Frame(self.ventana, bd=0, width=300, relief=tk.SOLID, padx=10, pady=10,bg='#FCFFFF')
+        frame_logo = tk.Frame(self.ventana, bd=0, width=300, relief=tk.SOLID, padx=10, pady=10,bg='#fcfcfc')
         frame_logo.pack(side="left",expand=tk.YES,fill=tk.BOTH)
-        label = tk.Label( frame_logo, image=logo,bg='#FCFFFF')
+        label = tk.Label( frame_logo, image=logo,bg='#fcfcfc')
         label.place(x=0,y=0,relwidth=1, relheight=1)
         
         #frame_form
