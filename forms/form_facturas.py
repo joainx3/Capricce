@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from tkinter.font import BOLD
+import openpyxl
+from openpyxl.styles import Font
 import util.generic as utl
 from util.bdo import conexion
 
@@ -122,6 +124,55 @@ class MostrarFacturas:
 
         # Vuelve a llenar la tabla con los datos actualizados
         self.llenar_tabla_facturas()
+
+    def exportar_a_excel(self):
+        # Verificar si hay una fila seleccionada
+        selected_item = self.tree.selection()
+        if not selected_item:
+            messagebox.showwarning("Advertencia", "Selecciona una fila para exportar a Excel.")
+            return
+
+        # Obtener los valores de la fila seleccionada
+        values = self.tree.item(selected_item, "values")
+
+        # Crear un cuadro de diálogo para seleccionar la ubicación del archivo Excel
+        excel_filename = self.guardar_excel()
+        if not excel_filename:
+            return
+
+        try:
+            # Crear un nuevo libro de trabajo y seleccionar la hoja activa
+            workbook = openpyxl.Workbook()
+            sheet = workbook.active
+
+            # Agregar encabezados
+            headers = ["ID_ORDEN", "Nombre Cliente", "Direccion", "Producto", "Precio", "FechaCompra", "EstadoFactura", "EstadoDespacho", "IVA", "TotalConIVA"]
+            for col_num, header in enumerate(headers, 1):
+                sheet.cell(row=1, column=col_num, value=header).font = Font(bold=True)
+
+            # Agregar datos
+            for col_num, value in enumerate(values, 1):
+                sheet.cell(row=2, column=col_num, value=value)
+
+            # Guardar el archivo Excel
+            workbook.save(excel_filename)
+
+            messagebox.showinfo("Información", f"Exportación a Excel exitosa. Archivo guardado en {excel_filename}")
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al exportar a Excel: {e}")
+
+    def guardar_excel(self):
+        # Crear un cuadro de diálogo para seleccionar la ubicación del archivo Excel
+        file_dialog = filedialog.asksaveasfile(defaultextension=".xlsx", filetypes=[("Excel files", "*.xlsx")])
+
+        # Obtener la ubicación seleccionada
+        if file_dialog:
+            excel_filename = file_dialog.name
+            file_dialog.close()  # Cerrar el archivo abierto por asksaveasfile
+            return excel_filename
+        else:
+            return None
 
 if __name__ == "__main__":
     app = MostrarFacturas()
