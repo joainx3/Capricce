@@ -46,9 +46,6 @@ class MostrarFacturas:
         btnCambiarDespacho = tk.Button(self.ventana, text="Cambiar Estado de Despacho", font=('Times', 15, BOLD), command=self.ver_detalles_factura)
         btnCambiarDespacho.grid(row=1, column=0, padx=10, pady=10, sticky="nw")
 
-        # Botón para exportar a Excel
-        btnExportarExcel = tk.Button(self.ventana, text="Exportar a Excel", font=('Times', 15, BOLD), command=self.exportar_a_excel)
-        btnExportarExcel.grid(row=2, column=0, padx=10, pady=10, sticky="nw")
 
         self.ventana.mainloop()
 
