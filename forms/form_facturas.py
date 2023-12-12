@@ -46,6 +46,9 @@ class MostrarFacturas:
         btnCambiarDespacho = tk.Button(self.ventana, text="Cambiar Estado de Despacho", font=('Times', 15, BOLD), command=self.ver_detalles_factura)
         btnCambiarDespacho.grid(row=1, column=0, padx=10, pady=10, sticky="nw")
 
+        # Botón para exportar a Excel
+        btnExportarExcel = tk.Button(self.ventana, text="Exportar a Excel", font=('Times', 15, BOLD), command=self.exportar_a_excel)
+        btnExportarExcel.grid(row=2, column=0, padx=10, pady=10, sticky="nw")
 
         self.ventana.mainloop()
 
@@ -146,6 +149,40 @@ class MostrarFacturas:
         # Vuelve a llenar la tabla con los datos actualizados
         self.llenar_tabla_facturas()
 
+    def filtrar_por_fecha(self):
+        fecha_inicio_str = self.entryFechaInicio.get()
+        fecha_fin_str = self.entryFechaFin.get()
+
+        try:
+            # Convertir las fechas a objetos datetime con el formato "MM/DD/YY"
+            fecha_inicio = datetime.strptime(fecha_inicio_str, "%m/%d/%y")
+            fecha_fin = datetime.strptime(fecha_fin_str, "%m/%d/%y")
+
+            # Validar que la fecha de inicio sea anterior o igual a la fecha de fin
+            if fecha_inicio > fecha_fin:
+                messagebox.showwarning("Advertencia", "La fecha de inicio debe ser anterior o igual a la fecha de fin.")
+                return
+
+            # Utilizar la conexión ya disponible en util.bdo
+            with conexion.cursor() as cursor:
+                # Modificar la consulta para incluir las fechas en la cláusula WHERE
+                cursor.execute("EXEC sp_MostrarFacturasClientesConFiltroFecha ?, ?", (fecha_inicio, fecha_fin))
+
+                # Obtener los resultados
+                resultados = cursor.fetchall()
+
+                # Limpiar la tabla actual
+                for item in self.tree.get_children():
+                    self.tree.delete(item)
+
+                # Llenar la tabla con los resultados filtrados por fechas
+                for row in resultados:
+                    nombre_cliente = f"{row[1]} "
+                    self.tree.insert("", "end", values=(row[0], nombre_cliente, row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9]))
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al filtrar por fechas: {e}")
+
     def exportar_a_excel(self):
         # Verificar si hay una fila seleccionada
         selected_item = self.tree.selection()
@@ -193,42 +230,7 @@ class MostrarFacturas:
             file_dialog.close()  # Cerrar el archivo abierto por asksaveasfile
             return excel_filename
         else:
-            return None
-
-    def filtrar_por_fecha(self):
-        fecha_inicio_str = self.entryFechaInicio.get()
-        fecha_fin_str = self.entryFechaFin.get()
-
-        try:
-            # Convertir las fechas a objetos datetime con el formato "MM/DD/YY"
-            fecha_inicio = datetime.strptime(fecha_inicio_str, "%m/%d/%y")
-            fecha_fin = datetime.strptime(fecha_fin_str, "%m/%d/%y")
-
-            # Validar que la fecha de inicio sea anterior o igual a la fecha de fin
-            if fecha_inicio > fecha_fin:
-                messagebox.showwarning("Advertencia", "La fecha de inicio debe ser anterior o igual a la fecha de fin.")
-                return
-
-            # Utilizar la conexión ya disponible en util.bdo
-            with conexion.cursor() as cursor:
-                # Modificar la consulta para incluir las fechas en la cláusula WHERE
-                cursor.execute("EXEC sp_MostrarFacturasClientesConFiltroFecha ?, ?", (fecha_inicio, fecha_fin))
-
-                # Obtener los resultados
-                resultados = cursor.fetchall()
-
-                # Limpiar la tabla actual
-                for item in self.tree.get_children():
-                    self.tree.delete(item)
-
-                # Llenar la tabla con los resultados filtrados por fechas
-                for row in resultados:
-                    nombre_cliente = f"{row[1]} "
-                    self.tree.insert("", "end", values=(row[0], nombre_cliente, row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9]))
-
-        except Exception as e:
-            messagebox.showerror("Error", f"Error al filtrar por fechas: {e}")
-   
+            return None   
 '''
     def exportar_a_pdf(self):
         # Verificar si hay una fila seleccionada
